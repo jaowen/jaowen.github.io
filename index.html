@@ -1,38 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-/*found on http://stackoverflow.com/questions/6169666/how-to-resize-an-image-to-fit-in-the-browser-window */
-  * {
-    padding: 0px;
-    margin: 0px;
-  }
-  .fit { /* set relative picture size */
-    max-width: 100%;
-    max-height: 100%;
-  }
-  .center {
-    display: block;
-    margin: auto;
-  }
-</style>
-</head>
-<body>
+---
+layout: default
+---
 
-<img class="center fit" src="low_complexity_art.bmp" >    
+<div class="home">
 
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script type="text/javascript" language="JavaScript">
-  function set_body_height() { // set body height = window height
-    $('body').height($(window).height());
-  }
-  $(document).ready(function() {
-    $(window).bind('resize', set_body_height);
-    set_body_height();
-  });
-</script>
+  <h1 class="page-heading">Posts</h1>
 
-</body>
-</html>
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
 
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
 
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+
+</div>
