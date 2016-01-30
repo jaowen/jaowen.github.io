@@ -12,8 +12,9 @@
             <h1 class="site-title"></h1>
             <!-- <h1 class="site-title"><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1> -->
             <nav class="site-nav">
-                <a href="{{ site.baseurl }}/" class="{% if page.url == '/' %}active{% endif %}">Posts</a>
-                <a href="{{ site.baseurl }}/about/" class="{% if page.url == '/about/' %}active{% endif %}">About</a>
+                <a href="{{ site.baseurl }}/" class="{% if page.url == '/' %}active{% endif %}">about</a>
+                <a href="{{ site.baseurl }}/new/" class="{% if page.url == '/new/' %}active{% endif %}">new</a>
+                <a href="{{ site.baseurl }}/all/" class="{% if page.url == '/all/' %}active{% endif %}">all</a>
             </nav>
         </header>
         {{ content }}

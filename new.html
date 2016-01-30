@@ -1,0 +1,10 @@
+---
+layout:    post
+---
+
+{% assign first_post = site.posts.first %}
+
+<h2 class="post-header">{{ first_post.title }}</h2>
+<p class="post-meta">{{ first_post.date | date: site.date_format }}</p>
+{{ first_post.content }}
+
