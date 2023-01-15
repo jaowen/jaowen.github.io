@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Jeremy Owen</title>
+ <link href="http://localhost:4000/atom.xml" rel="self"/>
+ <link href="http://localhost:4000/"/>
+ <updated>2023-01-15T11:11:01-05:00</updated>
+ <id>http://localhost:4000</id>
+ <author>
+   <name>Jeremy Owen</name>
+   <email></email>
+ </author>
+
+ 
+ <entry>
+   <title>Welcome to Jekyll!</title>
+   <link href="http://localhost:4000/2015/08/16/welcome-to-jekyll/"/>
+   <updated>2015-08-16T16:07:01-04:00</updated>
+   <id>http://localhost:4000/2015/08/16/welcome-to-jekyll</id>
+   <content type="html">&lt;p&gt;You’ll find this post in your &lt;code&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+
+&lt;p&gt;To add new posts, simply add a file in the &lt;code&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+
+&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Tom&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints &amp;#39;Hi, Tom&amp;#39; to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Write $\pi_{A,n}$ (resp.~$\pi_{I,n}$) for the steady state probability that $n$ ligands $L$ are bound and the receptor is in the active (resp.~inactive) state. Suppose up to $N$ ligands can be bound in total.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\sum_k W_{kj} \frac{\partial \pi_i}{\partial W_{kj}} \equiv \frac{\partial \pi_i}{\partial E_k} = \begin{cases} -\pi_k(1-\pi_k) &amp;\mbox{if } i = k \\
+\pi_k \pi_i &amp; \mbox{if } i \neq k \end{cases}. %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;At equilibrium, a perturbation of the ligand concentration is equivalent to a linear combination of vertex perturbations:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;[L] \frac{\partial \pi_A}{\partial [L]} = \sum_m \left(\sum_n (N-n) \frac{\partial \pi_{A,m}}{\partial E_{A,n}} + \sum_n (N-n) \frac{\partial \pi_{A,m}}{\partial E_{I,n}}\right)&lt;/script&gt;
+
+&lt;p&gt;and so \eqref{vertex} implies&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;[L] \frac{\partial \pi_A}{\partial [L]} = \pi_A (1-\pi_A) \left(\langle n\rangle_A -\langle n\rangle_I\right) \leq \frac{N}{4}&lt;/script&gt;
+
+&lt;p&gt;where $\langle n\rangle _A$ (resp.~$\langle n \rangle_I$) is the average number of ligands bound when the receptor is in the active state. This provides a transparent derivation of a well-known result.&lt;/p&gt;
+
+&lt;p&gt;Now in fact, the decomposition in \eqref{ladder} should also include many edge function perturbations, but we ignore them above because we assume the system is at equilibrium.&lt;/p&gt;
+
+&lt;p&gt;Next we could try to determine what improvement in sensitivity is possible out of equilibrium—forgetting for now factors of $\tanh$ because even at $F \to \infty$ there is some bound. By the single-rate perturbation bound, I don’t think $[L] \frac{\partial \pi_A}{\partial [L]}$ can ever exceed $N/2$ (to be sure I need to think more carefully about the structure of the graph).&lt;/p&gt;
+
+&lt;h1 id=&quot;polytope&quot;&gt;&lt;strong&gt;Polytope&lt;/strong&gt;&lt;/h1&gt;
+
+&lt;p&gt;Our desire to understand complicated out-of-equilibrium systems—such as living things—has led to intense interest in quantities, such as entropy production . Studying entropy production can lead to progress because although living things are complicated, they are often sustained by interactions with a simpler  .&lt;/p&gt;
+
+&lt;p&gt;However, as emphasized by many authors, &lt;em&gt;kinetics&lt;/em&gt; also play a key role in determining the properties of . In many examples,&lt;/p&gt;
+
+&lt;p&gt;In this note, we . As a starting point,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\min_\mathcal{P} \Delta S_\mathrm{env}(\mathcal{P}) \leq \log\left(\frac{\pi(i \to j; \tau)}{\pi(j \to i; \tau)}\right) \leq \max_\mathcal{P} \Delta S_\mathrm{env}(\mathcal{P})&lt;/script&gt;
+
+&lt;p&gt;A proof of this result, . After a long time $\tau \to \infty$,  .&lt;/p&gt;
+
+&lt;p&gt;A precise expression for the NESS distribution in terms of transitions rates is given by the matrix-tree . As a simple corollary of the matrix-tree theorem, it follows that .&lt;/p&gt;
+
+&lt;p&gt;These extreme states are states where there is no dissipation,&lt;/p&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://github.com/jekyll/jekyll-help&quot;&gt;Jekyll’s dedicated Help repository&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+
+</feed>
