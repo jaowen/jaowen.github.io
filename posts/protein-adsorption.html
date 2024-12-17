@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true
+            }
+        });
+    </script>
+    <title>Protein adsorption to PCR tubes: a simple calculation - Jeremy Owen</title>
+    <style type="text/css">
+        body {
+            margin: 40px auto;
+            max-width: 700px;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #444;
+            padding: 0 10px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #800000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        nav {
+            margin: 20px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        nav a {
+            margin-right: 20px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .footer {
+     margin-top: 50px;
+     padding-top: 20px;
+     border-top: 1px solid #eee;
+     font-size: 14px;
+     color: #666;
+ }
+
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../blog.html">Blog</a>
+    </nav>
+
+    <article>
+        <h1>Protein adsorption to PCR tubes: a simple calculation</h1>
+
+        <p>
+            How much protein could be lost to surface adsorption in a typical PCR tube? Here's an order of magnitude estimate.
+        </p>
+
+        <p>
+            Consider a standard 200 µL PCR tube with dimensions:
+        </p>
+        <ul>
+            <li>Height: 20.8 mm</li>
+            <li>Radius: 2.75 mm</li>
+        </ul>
+        <p>
+            The tube shape lies somewhere between a cylinder and a cone. If it were a cylinder, the surface area would be $2\pi r h \approx 359 \;\text{mm}^2$. For a cone, it would be $\pi r \sqrt{h² + r²} \approx 181 \;\text{mm}^2$. Since we are making a very rough estimate, let's just take the mean of these. Let's also divide by 2, assuming we're only using 100 µL, roughly half the tube. This yields 135 mm² of relevant surface area.
+        </p>
+
+        <p>
+            A typical folded protein has a diameter around 10 nm. Assuming a circular footprint, each protein occupies π(5 nm)² ≈ 79 nm² of surface area. If proteins formed a perfect monolayer on the surface, this suggests about a <strong>trillion</strong> proteins (7.6×10¹¹) could adsorb to the PCR tube.
+        </p>
+
+        <p>
+            What does this correspond to in terms of protein concentration in solution? If all these theoretically adsorbed proteins were instead dissolved in the 100 µL sample volume, they would contribute about <strong>13 nM</strong> to the concentration.
+        </p>
+
+        <p>
+            This calculation suggests surface adsorption could significantly impact biochemical assays involving with sticky proteins at tens of nanomolar concentration (or less).
+        </p>
+
+        <p>
+            All this assumes the protein only forms a monolayer. A nice discussion of multilayer adsorption—with a view to its possible implications for macromolecular condensates in cells—can be found in <a href="https://www.molbiolcell.org/doi/10.1091/mbc.E20-06-0393">this perspective paper</a> from Tim Mitchison.
+        </p>
+        <div class="footer">
+    <p>If you have any thoughts or questions, feel free to reach out via <a href="../index.html">email</a> or <a href="https://twitter.com/jeremyaowen">Twitter</a>.</p>
+</div>
+    </article>
+</body>
+</html>

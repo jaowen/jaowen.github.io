@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true
+            }
+        });
+    </script>
+    <title>The Challenge of Making Sharp Gradients Inside Cells - Jeremy Owen</title>
+    <style type="text/css">
+        body {
+            margin: 40px auto;
+            max-width: 700px;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #444;
+            padding: 0 10px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #800000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        nav {
+            margin: 20px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        nav a {
+            margin-right: 20px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .footer {
+     margin-top: 50px;
+     padding-top: 20px;
+     border-top: 1px solid #eee;
+     font-size: 14px;
+     color: #666;
+ }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../blog.html">Blog</a>
+    </nav>
+
+      <article>
+        <h1>The Challenge of Making Sharp Gradients Inside Cells</h1>
+
+        <p>
+            Making sharp concentration gradients inside cells is surprisingly difficult. The default outcome for a molecule produced at one location and degraded elsewhere is to spread out over distances much larger than typical cellular structures. Let's see why.
+        </p>
+
+        <h2>A Simple Calculation</h2>
+        <p>
+
+          Suppose a molecule is created at a point source at rate A, has diffusion constant D, and is consumed everywhere at a first-order rate R. Solving for the steady-state of the resulting reaction-diffusion equation, one can show that the length scale of the resulting gradient is $\lambda = \sqrt{D/R}$.
+        </p>
+
+        <p>
+            Let's plug in some numbers:
+        </p>
+
+        <p>
+            For the consumption rate $R$, it is easiest to suppose first-order Michaelis-Menten kinetics, so that $R = (k_\mathrm{cat}/Km) [E]$.  A typical $k_\mathrm{cat}/Km$ (according to Bionumbers) is 10^5 / (M * s), and I’ll suppose [E] ~ 1 uM.
+        </p>
+
+        <p>
+            For a typical small molecule ($D \approx 500 \;\mu\text{m}^2/\text{s}$) with enzymatic degradation at a reasonable rate (enzyme at $1\;\mu\text{M}$ with typical kinetics), we get $\lambda \approx 70\;\mu\text{m}$. That's several times larger than a typical cell! Even with the fastest possible degradation (limited by diffusion itself), we still get $\lambda \approx 700\;\text{nm}$.
+        </p>
+
+        <p>
+            Things improve somewhat for proteins, which diffuse more slowly ($D \approx 15\;\mu\text{m}^2/\text{s}$). With diffusion-limited degradation, we can get down to $\lambda \approx 100\;\text{nm}$. But that's about as sharp as it gets—and it requires extremely rapid degradation.
+        </p>
+
+        <h2>What This Means for Biology</h2>
+        <p>
+            This simple physics has profound implications. Most intracellular signaling molecules will tend to spread throughout their compartment rather than form local gradients. When we see proposals for mechanisms that require sharp spatial gradients—like transcription factors forming activity gradients between enhancers and promoters, or chromatin remodelers being "handed off" between regulatory elements—we should be skeptical.
+        </p>
+
+        <p>
+            To make sharp gradients, cells need to work against these physical constraints. They might:
+        </p>
+        <ul>
+            <li>Use very large, slowly-diffusing complexes</li>
+            <li>Employ extremely rapid degradation</li>
+            <li>Create physical barriers to diffusion</li>
+            <li>Use active transport instead of relying on diffusion</li>
+        </ul>
+
+        <p>
+            The take-home message? The inside of a cell tends toward being well-mixed. When we see spatial organization, we should look for the mechanisms actively maintaining it against the homogenizing forces of diffusion.
+        </p>
+
+        <div class="footer">
+    <p>If you have any thoughts or questions, feel free to reach out via <a href="../index.html">email</a> or <a href="https://twitter.com/jeremyaowen">Twitter</a>.</p>
+</div>
+   </article>
+
+</body>
+</html>
