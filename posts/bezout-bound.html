@@ -14,7 +14,7 @@
             }
         });
     </script>
-    <title>Benchmarking epigenetic memories - Jeremy Owen</title>
+    <title>Bezout bound on chemical memory - Jeremy Owen</title>
     <style type="text/css">
         body {
             margin: 40px auto;
@@ -74,14 +74,14 @@
     </nav>
 
       <article>
-             <h1>Benchmarking epigenetic memories</h1>
+             <h1>Bezout bound on chemical memory</h1>
 
              <p>
-                 The scale of epigenetic systems, in terms of the number of molecules or chemical species involved, seems badly out of proportion to what cells plausibly have to "remember" for developmental purposes.
+                 How many distinct states can a chemical reaction network remember?
              </p>
              <p>
-                 First, how many bits of epigenetic memory might be needed for differentiation? I think an extremely generous upper bound is <strong>50 bits</strong>. There are less than $2^{50}$ cells in the human body, and obviously there are many fewer cell types (even considering possibility of "identity tag" systems like the protocadherin neural identity code). And I think not all memory of cell type needs to be encoded epigenetically—for example, physical position of a cell within a tissue can probably also be instructive for cell type.
-             </p>
+                For a network with N molecular species, assuming mass action kinetics and at most bimolecular reactions, the steady states are solutions to N polynomial equations in N variables, where each polynomial has degree at most 2.
+              </p>
              <p>
                  Second, for how many cell divisions does this memory have to last? Tomasetti/Vogelstein (2015) provide estimates of the rate of cell divisions in various tissues. In a typical lifespan, I think we are talking at most <strong>thousands of cell divisions</strong>.
              </p>

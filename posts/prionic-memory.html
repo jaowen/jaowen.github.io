@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true
+            }
+        });
+    </script>
+    <title>Prionic epigenetic memory  - Jeremy Owen</title>
+    <style type="text/css">
+        body {
+            margin: 40px auto;
+            max-width: 700px;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #444;
+            padding: 0 10px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #800000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        nav {
+            margin: 20px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        nav a {
+            margin-right: 20px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.9em;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .footer {
+     margin-top: 50px;
+     padding-top: 20px;
+     border-top: 1px solid #eee;
+     font-size: 14px;
+     color: #666;
+ }
+    </style>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/mathematica.min.js"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', (event) => {
+          document.querySelectorAll('pre code').forEach((el) => {
+              hljs.highlightElement(el);
+          });
+      });
+  </script>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../blog.html">Blog</a>
+    </nav>
+
+    <article>
+
+         <h1>Prionic epigenetic memory</h1>
+         <p>
+            Here I'll describe a toy model of a molecule that catalyzes its own creation&mdash;providing a very simple form of epigenetic memory. Though loosely inspired by prion-based memory in yeast, in fact the model illustrates principles common to other epigenetic systems, such as those involving the spreading of histone modifications.
+        </p>
+
+       <p>
+       Let's suppose that there are two types of molecules, X and Y, subject to two basic reactions:
+       </p>
+       <ol>
+       <li>Creation of X molecules at a constant rate $k$</li>
+       <li>Conversion of X to Y molecules, catalyzed by existing Y molecules, with rate constant $s$</li>
+       </ol>
+       <div class="math-block">
+        $$
+        \begin{align*}
+        \emptyset &\overset{k}{\rightarrow} X \\
+        X + Y &\overset{s}{\rightarrow} Y + Y
+        \end{align*}
+        $$
+       </div>
+
+       <p>
+        In the "prion" interpretation, Y is like a misfolded, prion form of a protein X. But this could also be a toy model for the spreading of a histone mark in a genomic region&mdash;viewing X as an unmarked histone and Y as a marked one, with the conversion reaction representing the "spreading" of the mark mediated by a reader-writer enzyme.
+       </p>
+
+       <p>
+        We'll suppose these reactions occur in dividing cells, with molecules randomly assorted to daughter cells at division (at times T = 1, 2, 3, ...). On average this will halve molecule counts every generation. Overcoming this dilution&mdash;an inevitable consequence of cell growth and division&mdash;is the fundamental challenge for memory maintenance.
+ </p>
+
+          <h3>Stochastic simulation</h3>
+          <p>
+            To capture the inherently stochastic nature of reactions at the molecular scale, let's implement an exact stochastic simulation of this system using Gillespie's algorithm (written in Mathematica):
+        </p>
+        <div class="code-block">
+            <pre><code class="language-mathematica">GillespieStep[{x_, y_, t_}, k_, s_] :=
+    Flatten[{{x, y} + RandomChoice[{k, s x y} -> {{1, 0}, {-1, 1}}],
+        t + RandomVariate[ExponentialDistribution[k + s x y]]}];</code></pre>
+        </div>
+        <p>
+            This function implements a single step of the algorithm, taking the current state of the system, selecting a reaction to occur (either creation of X or conversion of X to Y), and then returning the new system state and time.
+        </p>
+        <p>The following function simulates dynamics until a fixed time T = 1, representing one cell cycle:</p>
+
+        <div class="code-block">
+            <pre><code class="language-mathematica">PrionDynamics[{x_, y_}, k_, s_] :=
+Take[NestWhileList[
+    GillespieStep[#, k, s] &, {x, y, 0}, (#[[3]] < 1) &][[-2]], {1, 2}];</code></pre>
+            </div>
+
+          <p>To model cell division, we randomly partition molecules to daughter cells, which amounts to drawing from a binomial distribution:</p>
+
+          <div class="code-block">
+              <pre><code class="language-mathematica">Assort[{x_, y_}] := {RandomVariate[BinomialDistribution[x, 1/2]],
+        RandomVariate[BinomialDistribution[y, 1/2]]}</code></pre>
+          </div>
+          <p>
+            We are going to follow just one cell lineage through successive divisions&mdash;this represents tracking a single branch of the cellular genealogy, as one would observe if following a single cell in a growing colony.
+          </p>
+
+          <p>Putting everything together, we can simulate many generations of growth and division, and plot the number of X and Y molecules over time:</p>
+          <div class="code-block">
+              <pre><code class="language-mathematica">ListLinePlot[
+        Transpose@
+            NestList[Assort[PrionDynamics[#, 18.0, 0.1]] &, {10, 10}, 2000],
+        Frame -> True, LabelStyle -> {Black, 18},
+        FrameLabel -> {"Time (cell generations)", "Molecule count"},
+        PlotLegends -> {"X", "Y"}]</code></pre>
+          </div>
+          <figure style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <img src="../stableprion1.png" alt="" style="max-width: 400px; height: auto;">
+            <img src="../stableprion2.png" alt="" style="max-width: 400px; height: auto;">
+            <figcaption>Two characteristic trajectories (k = 18.0, s = 0.1), showing X and Y molecule counts just after cell division, over many cell generations.</figcaption>
+        </figure>
+        <p>
+            For these parameter choices, we get around 20 molecules total (X and Y). If we start with at least some Y molecules, on average the system will remain in a "Y rich" state for a long time (~1000 generations), even though the alternative "Y free" state is completely stable. This is the epigenetic memory in the model. The memory is lost when, by chance, all the Y molecules are lost at once (e.g. assorting all to one daughter cell in a cell division).
+        </p>
+
+  <h3>Exponential scaling of memory stability</h3>
+
+         <p>
+            So 20 molecules can give us at least ~1000 generations of memory. Is this the best we can do with 20 molecules? And what if we have more molecules?
+         </p>
+
+          <p>
+            The best case for the memory turns out to be when $s$ is very large, so that if any Y is present, X molecules instantly become Y when they are created. In this case, we can just keep track of how many Y molecules there are. They are effectively created at rate k, and are periodically diluted by cell division. We start with some number, and at some point, stochastically, they will all be lost. This is when the memory is lost. 
+         </p>
+
+          <p>
+            Intuitively, it seems as though the time until this loss event should scale exponentially with the typical number of molecules $N$ in the system, because it requires all Y molecules to be lost at once at a cell division, which happens with probability $2^{-N}$. In fact, this is not quite right, because the number of molecules fluctuates. However, numerically simulating the system for different values of $k$ and comparing the average number of molecules to the lifetime, we find our intuition is qualitatively correct&mdash;there is an exponential scaling of memory stability:
+         </p>
+
+
+          <div class="code-block">
+              <pre><code class="language-mathematica">dat = Table[{1.5 k, 
+    Around@Table[
+      Length[NestWhileList[
+        RandomVariate[
+          BinomialDistribution[# + 
+            RandomVariate[PoissonDistribution[k]], 1/2]] &, 
+        Ceiling[k] , (# > 0) &, 1, 10000]], {1000}]}, {k, 0.5, 6, 
+    0.5}];
+Show[ListLogPlot[{#[[1]], #[[2, 1]]} & /@ dat, PlotStyle -> Black], 
+ Frame -> True, 
+ FrameLabel -> {"Mean number of molecules", 
+   "Memory stability (generations)"}, LabelStyle -> {Black, 18}]</code></pre>
+          </div>
+
+         <figure style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+             <img src="../expmemory.png" alt="Exponential scaling of memory duration with system size" style="max-width: 400px; height: auto;">
+             <figcaption>Memory duration increases exponentially with the number of molecules in the system. The y-axis shows the average number of generations of stable memory (log scale) versus the average number of molecules in the system (which equals $3 k /2$).</figcaption>
+         </figure>
+
+          <p>
+           This exponential scaling of stability with system size is typical of bistable switches, such as the genetic toggle switch. I suspect exponential scaling in $N$ arises generally in chemical reaction networks whenever the deterministic (large $N$) limit is multistable. Interestingly, <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.115.208101">Biancalani and Assaf (2015)</a> show that a toggle switch lacking cooperativity, whose deterministic limit is not bistable, exhibits instead a merely quadratic scaling of lifetime with system size. 
+         </p>
+
+    <h3>Postscript</h3>
+         <p>
+An interesting subtlety here which I didn't notice initially: the volume of growing cells increases over the course of the single cell cycle, which means that the bimolecular conversion reaction of X to Y must slow down over the course of the cell cycle! Though getting this right shouldn't matter for our qualitative story here, it is interesting because it is not completely obvious how to do exact stochastic simulation with this kind of time-dependent rate. A solution can be found in  <a href="https://pubmed.ncbi.nlm.nih.gov/17052122/">this 2004 paper from Ting Lu, Jeff Hasty, and others</a>.
+         </p>
+         <div class="footer">
+     <p>If you have any thoughts or questions, feel free to reach out via <a href="../index.html">email</a> or <a href="https://twitter.com/jeremyaowen">Twitter</a>.</p>
+ </div>
+     </article>
+
+</body>
+</html>
