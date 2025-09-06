@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nucleosome Reconstitution Calculator</title>
+    <style>
+        body {
+            margin: 40px auto;
+            max-width: 700px;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #444;
+            padding: 0 10px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-top: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .wide-input {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            margin-bottom: 5px;
+        }
+        
+        input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .unit {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .calculated-concentrations {
+            margin: 20px 0;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .conc-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        th {
+            background: #f0f0f0;
+        }
+        
+        .error {
+            color: #800000;
+            background: #ffe6e6;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ffcccc;
+        }
+        
+        .sequence-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+        
+        .sequence-error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .input-row, .conc-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Nucleosome Reconstitution Calculator</h1>
+    
+    <div class="input-group">
+        <div class="input-row">
+            <div class="input-field wide-input">
+                <label for="dna-sequence">DNA Sequence <span class="unit">(5' to 3')</span></label>
+                <input type="text" id="dna-sequence" placeholder="e.g., ATTTGCG" style="font-family: monospace; text-transform: uppercase;">
+                <div id="sequence-info" class="sequence-info"></div>
+                <div id="sequence-error" class="sequence-error"></div>
+                <small style="color: #888; font-size: 12px;">Auto-calculates dsDNA extinction coefficient, by nearest-neighbor method with hypochromicity correction</small>
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field">
+                <label for="dna-extinction">DNA Extinction Coefficient <span class="unit">(M⁻¹cm⁻¹)</span></label>
+                <input type="number" id="dna-extinction" step="any" placeholder="Auto-calculated from sequence">
+            </div>
+            
+            <div class="input-field">
+                <label for="octamer-extinction">Octamer Extinction Coefficient <span class="unit">(M⁻¹cm⁻¹)</span></label>
+                <input type="number" id="octamer-extinction" value="44700" step="any">
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field">
+                <label for="dna-absorbance">DNA Absorbance <span class="unit">(A260)</span></label>
+                <input type="number" id="dna-absorbance" step="any" placeholder="e.g., 10.5">
+            </div>
+            
+            <div class="input-field">
+                <label for="octamer-absorbance">Octamer Absorbance <span class="unit">(A280)</span></label>
+                <input type="number" id="octamer-absorbance" step="any" placeholder="e.g., 1.35">
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field">
+                <label for="total-volume">Total Volume <span class="unit">(μL)</span></label>
+                <input type="number" id="total-volume" value="15" step="any" min="0">
+            </div>
+            
+            <div class="input-field">
+                <label for="target-conc">Target DNA Concentration <span class="unit">(μM)</span></label>
+                <input type="number" id="target-conc" value="0.7" step="any" min="0">
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <div class="input-field wide-input">
+                <label for="ratios">Reconstitution Ratios <span class="unit">(comma-separated)</span></label>
+                <input type="text" id="ratios" value="1.5, 2.0, 2.5" placeholder="e.g., 1.5, 2.0, 2.5">
+            </div>
+        </div>
+    </div>
+    
+    <div class="calculated-concentrations" id="concentrations" style="display: none;">
+        <h3>Calculated Stock Concentrations</h3>
+        <div class="conc-row">
+            <div>DNA: <strong><span id="dna-conc">-</span> μM</strong></div>
+            <div>Octamer: <strong><span id="octamer-conc">-</span> μM</strong></div>
+        </div>
+    </div>
+    
+    <div id="error-message" class="error" style="display: none;"></div>
+    
+    <div id="results-container" style="display: none;">
+        <h3>Pipetting Volumes (μL)</h3>
+        <table id="results-table">
+        </table>
+    </div>
+
+    <script>
+        // Nearest neighbor extinction coefficients (M⁻¹cm⁻¹) at 260 nm for single-stranded DNA
+        const nearestNeighbor = {
+            'AA': 27400, 'AC': 21200, 'AG': 25000, 'AT': 22800,
+            'CA': 21200, 'CC': 14600, 'CG': 18000, 'CT': 15200,
+            'GA': 25200, 'GC': 17600, 'GG': 21600, 'GT': 20000,
+            'TA': 23400, 'TC': 16200, 'TG': 19000, 'TT': 16800
+        };
+        
+        // Individual base extinction coefficients (M⁻¹cm⁻¹) at 260 nm
+        const individualBases = {
+            'A': 15400, 'C': 7400, 'G': 11500, 'T': 8700
+        };
+        
+        // Base complement lookup
+        const complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'};
+        
+        function validateDNASequence(sequence) {
+            // Check if sequence contains only valid DNA bases (A, C, G, T)
+            const cleanSequence = sequence.toUpperCase().trim();
+            const invalidChars = cleanSequence.match(/[^ATCG]/g);
+            return {
+                isValid: !invalidChars,
+                invalidChars: invalidChars,
+                cleanSequence: cleanSequence
+            };
+        }
+        
+        function calculateSingleStrandExtinction(sequence) {
+            let nearestNeighborSum = 0;
+            let individualBaseSum = 0;
+            
+            // Sum nearest neighbor contributions (N-1 dinucleotides)
+            for (let i = 0; i < sequence.length - 1; i++) {
+                const dinucleotide = sequence.substring(i, i + 2);
+                if (nearestNeighbor[dinucleotide]) {
+                    nearestNeighborSum += nearestNeighbor[dinucleotide];
+                }
+            }
+            
+            // Sum individual base contributions to subtract (N-1 bases, excluding first base)
+            for (let i = 1; i < sequence.length; i++) {
+                const base = sequence[i];
+                if (individualBases[base]) {
+                    individualBaseSum += individualBases[base];
+                }
+            }
+            
+            return nearestNeighborSum - individualBaseSum;
+        }
+        
+        function calculateDsDNAExtinction(sequence) {
+            const validation = validateDNASequence(sequence);
+            
+            if (!validation.isValid) {
+                return {
+                    error: `Invalid DNA sequence. Found invalid characters: ${validation.invalidChars.join(', ')}. Only A, C, G, T are allowed.`,
+                    extinction: null
+                };
+            }
+            
+            const cleanSequence = validation.cleanSequence;
+            if (cleanSequence.length < 2) {
+                return {
+                    error: 'DNA sequence must be at least 2 bases long.',
+                    extinction: null
+                };
+            }
+            
+            // Calculate single-strand extinction for input sequence
+            const singleStrandExt = calculateSingleStrandExtinction(cleanSequence);
+            
+            // Generate reverse complement
+            const reverseComplement = cleanSequence.split('').reverse().map(base => complement[base]).join('');
+            
+            // Calculate single-strand extinction for reverse complement
+            const reverseComplementExt = calculateSingleStrandExtinction(reverseComplement);
+            
+            // Calculate base composition fractions
+            const totalBases = cleanSequence.length;
+            const gCount = (cleanSequence.match(/G/g) || []).length;
+            const cCount = (cleanSequence.match(/C/g) || []).length;
+            const aCount = (cleanSequence.match(/A/g) || []).length;
+            const tCount = (cleanSequence.match(/T/g) || []).length;
+            
+            const fGC = (gCount + cCount) / totalBases;
+            const fAT = (aCount + tCount) / totalBases;
+            
+            // Calculate hypochromicity factor: h = (0.059 × fGC) + (0.287 × fAT)
+            const h = (0.059 * fGC) + (0.287 * fAT);
+            
+            // Calculate double-stranded extinction coefficient
+            // Eds,260 = (Ess,260 + Ereverse_complement,260) × (1 - h)
+            const dsDNAExtinction = (singleStrandExt + reverseComplementExt) * (1 - h);
+            
+            return {
+                error: null,
+                extinction: Math.round(dsDNAExtinction),
+                basePairs: totalBases
+            };
+        }
+        
+        function showSequenceInfo(basePairs) {
+            const sequenceInfo = document.getElementById('sequence-info');
+            sequenceInfo.textContent = `${basePairs} base pairs`;
+            sequenceInfo.style.display = 'block';
+            
+            // Hide sequence error if showing info
+            document.getElementById('sequence-error').style.display = 'none';
+        }
+        
+        function showSequenceError(errorMessage) {
+            const sequenceError = document.getElementById('sequence-error');
+            sequenceError.textContent = errorMessage;
+            sequenceError.style.display = 'block';
+            
+            // Hide sequence info if showing error
+            document.getElementById('sequence-info').style.display = 'none';
+        }
+        
+        function hideSequenceMessages() {
+            document.getElementById('sequence-info').style.display = 'none';
+            document.getElementById('sequence-error').style.display = 'none';
+        }
+        
+        function calculateConcentrations() {
+            const dnaExt = parseFloat(document.getElementById('dna-extinction').value);
+            const octamerExt = parseFloat(document.getElementById('octamer-extinction').value);
+            const dnaAbs = parseFloat(document.getElementById('dna-absorbance').value);
+            const octamerAbs = parseFloat(document.getElementById('octamer-absorbance').value);
+            const totalVolume = parseFloat(document.getElementById('total-volume').value);
+            const targetConc = parseFloat(document.getElementById('target-conc').value);
+            const ratiosInput = document.getElementById('ratios').value;
+            
+            // Clear previous error
+            document.getElementById('error-message').style.display = 'none';
+            
+            // Validate inputs
+            if (isNaN(dnaExt) || isNaN(octamerExt) || isNaN(dnaAbs) || isNaN(octamerAbs) || 
+                isNaN(totalVolume) || isNaN(targetConc) || !ratiosInput.trim()) {
+                showError('Please fill in all required fields with valid numbers.');
+                return;
+            }
+            
+            if (dnaExt <= 0 || octamerExt <= 0 || totalVolume <= 0 || targetConc <= 0) {
+                showError('Extinction coefficients, volume, and concentration must be positive.');
+                return;
+            }
+            
+            // Parse ratios
+            let ratios;
+            try {
+                ratios = ratiosInput.split(',').map(r => parseFloat(r.trim())).filter(r => !isNaN(r) && r > 0);
+                if (ratios.length === 0) {
+                    throw new Error('No valid ratios found');
+                }
+            } catch (e) {
+                showError('Invalid ratio format. Use comma-separated positive numbers (e.g., 1.5, 2.0, 2.5).');
+                return;
+            }
+            
+            // Calculate stock concentrations (convert from M to μM)
+            const dnaConc = (dnaAbs / dnaExt) * 1e6; // μM
+            const octamerConc = (octamerAbs / octamerExt) * 1e6; // μM
+            
+            if (dnaConc <= 0 || octamerConc <= 0) {
+                showError('Calculated concentrations must be positive. Check your absorbance and extinction coefficient values.');
+                return;
+            }
+            
+            // Display calculated concentrations
+            document.getElementById('dna-conc').textContent = dnaConc.toFixed(2);
+            document.getElementById('octamer-conc').textContent = octamerConc.toFixed(2);
+            document.getElementById('concentrations').style.display = 'block';
+            
+            // Calculate volumes for each ratio
+            const results = [];
+            for (const ratio of ratios) {
+                const dnaVolume = (totalVolume * targetConc) / dnaConc;
+                const octamerVolume = (ratio * totalVolume * targetConc) / octamerConc;
+                const kclVolume = dnaVolume + octamerVolume;
+                const tekVolume = totalVolume - 2 * (dnaVolume + octamerVolume);
+                
+                if (tekVolume < 0) {
+                    showError(`Negative TEK volume calculated for ratio ${ratio}. Try reducing target concentration or increasing total volume.`);
+                    return;
+                }
+                
+                results.push({
+                    ratio: ratio,
+                    dna: Math.round(dnaVolume * 100) / 100,
+                    octamer: Math.round(octamerVolume * 100) / 100,
+                    kcl: Math.round(kclVolume * 100) / 100,
+                    tek: Math.round(tekVolume * 100) / 100
+                });
+            }
+            
+            displayResults(results);
+        }
+        
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('concentrations').style.display = 'none';
+        }
+        
+        function displayResults(results) {
+            const table = document.getElementById('results-table');
+            table.innerHTML = '';
+            
+            // Create header
+            const headerRow = table.insertRow();
+            const headers = ['Ratio', 'DNA', 'Octamer', '4M KCl', '2M TEK'];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            
+            // Create data rows
+            results.forEach(result => {
+                const row = table.insertRow();
+                row.insertCell().textContent = result.ratio;
+                row.insertCell().textContent = result.dna;
+                row.insertCell().textContent = result.octamer;
+                row.insertCell().textContent = result.kcl;
+                row.insertCell().textContent = result.tek;
+            });
+            
+            document.getElementById('results-container').style.display = 'block';
+        }
+        
+        // Add event listeners for real-time calculation
+        const inputs = ['dna-extinction', 'octamer-extinction', 'dna-absorbance', 'octamer-absorbance', 
+                       'total-volume', 'target-conc', 'ratios'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateConcentrations);
+        });
+        
+        // Add handler for DNA sequence that auto-calculates dsDNA extinction coefficient
+        document.getElementById('dna-sequence').addEventListener('input', function() {
+            const sequence = this.value.trim();
+            
+            if (sequence.length === 0) {
+                hideSequenceMessages();
+                document.getElementById('dna-extinction').value = '';
+                calculateConcentrations();
+                return;
+            }
+            
+            if (sequence.length >= 2) {
+                const result = calculateDsDNAExtinction(sequence);
+                
+                if (result.error) {
+                    showSequenceError(result.error);
+                    document.getElementById('dna-extinction').value = '';
+                } else {
+                    showSequenceInfo(result.basePairs);
+                    document.getElementById('dna-extinction').value = result.extinction;
+                    calculateConcentrations();
+                }
+            } else {
+                hideSequenceMessages();
+                document.getElementById('dna-extinction').value = '';
+            }
+        });
+        
+        // Initial calculation if defaults are present
+        calculateConcentrations();
+    </script>
+</body>
+</html>
